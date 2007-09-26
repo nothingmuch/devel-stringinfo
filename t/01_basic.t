@@ -3,7 +3,12 @@
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More;
+
+BEGIN {
+	plan skip_all => "YAML is required for testing" unless eval { require YAML };
+	plan "no_plan";
+}
 
 use utf8;
 
@@ -25,5 +30,12 @@ my @core = keys %strings;
 @strings{qw(ascii_latin1 uni_fr_latin1)} = map { Encode::encode(latin1 => $_) } @strings{qw(ascii uni_fr)};
 
 foreach my $str ( keys %strings ) {
-	$o->dump_info($strings{$str}, name => $str);
+	my $dump = $o->dump_info($strings{$str}, name => $str);
+
+	like( $dump, qr/\Q$strings{$str}/, "contains string" );
+
+	my $is_utf8 = 0+utf8::is_utf8($strings{$str});
+	like( $dump, qr/is_utf8:\s*$is_utf8/, "is utf8 = $is_utf8" );
+
+	like( $dump, qr/utf-16/i, "encoding guessed" ) if $str =~ /utf16/;
 }

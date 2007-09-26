@@ -30,22 +30,28 @@ has encoding_suspects => (
 	default    => sub { [] },
 );
 
+has include_value_info => (
+	isa => "Bool",
+	is  => "rw",
+	default => 0,
+);
+
 has include_decoded => (
 	isa => "Bool",
 	is  => "rw",
 	default => 1,
 );
 
-has guess_if_valid => (
+has include_hex => (
 	isa => "Bool",
-	is  => "rw",
+	is => "rw",
 	default => 1,
 );
 
-has include_value_info => (
+has include_raw => (
 	isa => "Bool",
 	is  => "rw",
-	default => 0,
+	default => 1,
 );
 
 sub sorted_hash {
@@ -61,6 +67,19 @@ sub dump_info {
 	local $YAML::SortKeys = 0; # let IxHash decide
 	local $YAML::UseHeader = 0;
 	my $dump = YAML::Dump(sorted_hash @args, $self->filter_data( $self->debug_data($string) ));
+
+	if ( $self->include_raw ) {
+		if ( $string =~ /\n/s ) {
+			$dump .= "raw = <<END_OF_STRING\n$string\nEND_OF_STRING\n";
+		} else {
+			$dump .= "raw = <<$string>>\n";
+		}
+	}
+
+	if ( $self->include_hex ) {
+		require Data::HexDump::XXD;
+		$dump .= Data::HexDump::XXD::xxd($string) . "\n";
+	}
 
 	if ( defined wantarray ) {
 		return $dump;
