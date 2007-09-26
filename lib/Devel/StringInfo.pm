@@ -3,6 +3,8 @@
 package Devel::StringInfo;
 use Moose;
 
+our $VERSION = "0.01";
+
 use utf8 ();
 use Encode qw(decode encode);
 use Encode::Guess ();
