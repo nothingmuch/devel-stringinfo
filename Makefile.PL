@@ -16,6 +16,7 @@ WriteMakefile(
 		'Encode::Guess' => 0,
 		'Tie::IxHash' => 0,
 		'Test::use::ok' => 0,
+		'Sub::Exporter' => 0,
 	},
 );
 

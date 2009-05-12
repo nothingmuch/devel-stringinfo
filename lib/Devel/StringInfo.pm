@@ -3,13 +3,30 @@
 package Devel::StringInfo;
 use Moose;
 
-our $VERSION = "0.02";
-
 use utf8 ();
 use Encode qw(decode encode);
 use Encode::Guess ();
 use Scalar::Util qw(looks_like_number);
 use Tie::IxHash;
+
+use namespace::clean -except => 'meta';
+
+our $VERSION = "0.02";
+
+use Sub::Exporter -setup => {
+    exports => [
+        string_info => sub {
+			my ( $class, $name, $args ) = @_;
+
+			my $dumper = $class->new($args);
+
+			return sub {
+				my $str = shift;
+				$dumper->dump_info($str);
+			};
+		}
+    ],
+};
 
 has guess_encoding => (
 	isa => "Bool",
@@ -240,14 +257,24 @@ Devel::StringInfo - Gather information about strings
 
 	my $string = get_string_from_somewhere();
 
+	use Devel::StringInfo qw(string_info);
+
 	# warn()s a YAML dump in void context
+	string_info($string);
+
+
+
+	# the above is actually shorthand for:
 	Devel::StringInfo->new->dump_info($string);
 
 
+	# you can also customize with options:
 	my $d = Devel::StringInfo->new(
-		%opts,	
+		guess_encoding => 0,
 	);
 
+
+	# and collect data instead of formatting it as a string
 	my %hash = $d->gather_data( $string );
 
 	warn "it's a utf8 string" if $hash{is_utf8};
@@ -266,6 +293,14 @@ exactly is going on with a string.
 
 This module clumps together a bunch of checks you can perform on a string to
 figure out what's in it.
+
+=head1 EXPORTS
+
+This module optionally exports a C<string_info> subroutine. It uses
+L<Sub::Exporter>, so you can pass any options to the import routine, and they
+will be used to construct the dumper for your exported sub:
+
+	use Devel::StringInfo string_info => { guess_encoding => 0 };
 
 =head1 ATTRIBUTES
 
