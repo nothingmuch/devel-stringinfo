@@ -1,0 +1,8 @@
+0.03
+	- added Sub::Exporter based convenience function
+
+0.02
+	- Rerelease with fixed MANIFEST file
+
+0.01
+	- Initial relaese
