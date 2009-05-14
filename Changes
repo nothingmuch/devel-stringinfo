@@ -1,3 +1,6 @@
+0.04
+	- missing dep in Makefile.PL
+
 0.03
 	- added Sub::Exporter based convenience function
 
