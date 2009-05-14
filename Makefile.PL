@@ -17,6 +17,7 @@ WriteMakefile(
 		'Tie::IxHash' => 0,
 		'Test::use::ok' => 0,
 		'Sub::Exporter' => 0,
+		'namespace::clean' => 0.08,
 	},
 );
 
